@@ -17,6 +17,10 @@ sessions = KeyStore()
 
 
 def make_session_token() -> str:
+    """
+    Creates a session token and stores it in the session store
+    :return: created session UUID
+    """
     uuid_token = str(uuid.uuid4())
     timestamp = datetime.now(timezone.utc) + timedelta(minutes=config.get_value(
         "racoon", "cookie_expire_time_minutes"))
@@ -25,6 +29,11 @@ def make_session_token() -> str:
 
 
 def send_challenge(client: socket.socket) -> None:
+    """
+    Sends a challenge response to a socket
+    :param client: client socket to send the challenge to
+    :return: None
+    """
     send_response(client,
     "HTTP/1.1", 200, "OK", render_template(
         f"{STATIC_FOLDER}/challenge.html",
