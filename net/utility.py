@@ -15,7 +15,14 @@ def set_cookie(name: str, value: str) -> str:
     return f"{name}={value}"
 
 
-def tuple_netstring(string: str) -> tuple[str, int]:
+def tuple_netstring(string: str) -> tuple[str, int] | None:
+    """
+    Takes an IP:PORT string and turns it into a tuple
+    :param string: IP:PORT string
+    :return: tuple or None
+    """
+    if ":" not in string:
+        return None
     ip, port = string.split(":")
     return ip, int(port)
 
