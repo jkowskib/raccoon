@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>{{ errorcode }} - {{ errormessage }}</title>
+
+        <style>
+            body {
+                width: 50%;
+                min-width: 500px;
+                margin-top: 10%;
+                background-color: #292929;
+
+                color: white;
+
+                max-width: fit-content;
+
+                margin-left: auto;
+                margin-right: auto;
+                align-content: center;
+
+                font-family: "Arial", serif;
+            }
+
+            span {
+                display: inline-flex;
+                gap: 10px;
+            }
+
+            h1 {
+                margin: 0;
+            }
+
+            footer {
+                font-size: 15px;
+                color: #b5b5b5;
+                margin-top: 10px;
+            }
+        </style>
+    </head>
+
+    <body>
+        <h1>{{ errorcode }} - {{ errormessage }}</h1>
+
+        <p>{{ message }}</p>
+
+        <footer>Issued by Raccoon on</footer>
+    </body>
+
+    <script>
+        document.getElementsByTagName("footer")[0].innerText += " " + new Date().toLocaleString();
+    </script>
+</html>

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Checking your connection...</title>
+
+        <style>
+            body {
+                width: 50%;
+                min-width: 500px;
+                margin-top: 10%;
+                background-color: #292929;
+
+                color: white;
+
+                max-width: fit-content;
+
+                margin-left: auto;
+                margin-right: auto;
+                align-content: center;
+
+                font-family: "Arial", serif;
+            }
+
+            span {
+                display: inline-flex;
+                gap: 10px;
+            }
+
+            span svg {
+                margin-top: auto;
+                margin-bottom: auto;
+            }
+
+            h1 {
+                margin: 0;
+            }
+
+            footer {
+                font-size: 15px;
+                color: #b5b5b5;
+                margin-top: 10px;
+            }
+        </style>
+    </head>
+
+    <body>
+        <span>
+            <svg width="24" height="24" stroke="#FFFFFF" xmlns="http://www.w3.org/2000/svg">
+                <style>
+                    .spinner_V8m1{transform-origin:center;animation:spinner_zKoa 2s linear infinite}
+                    .spinner_V8m1 circle{stroke-linecap:round;animation:spinner_YpZS 1.5s ease-in-out infinite}
+                    @keyframes spinner_zKoa{100%{transform:rotate(360deg)}}
+                    @keyframes spinner_YpZS{
+                        0%{stroke-dasharray:0 150;stroke-dashoffset:0}
+                        47.5%{stroke-dasharray:42 150;stroke-dashoffset:-16}
+                        95%,100%{stroke-dasharray:42 150;stroke-dashoffset:-59}
+                    }
+                </style>
+                <g class="spinner_V8m1">
+                    <circle cx="12" cy="12" r="9.5" fill="none" stroke-width="3"></circle>
+                </g>
+            </svg>
+
+            <h1>Checking your connection...</h1>
+        </span>
+
+        <p>This is an automated test to block unwanted connections. It should only take a moment.</p>
+        <p>If you seem stuck, refresh the page to try again.</p>
+
+        <footer>Issued by Raccoon on</footer>
+    </body>
+
+    <script>
+        var challenge_time = {{ challenge_time }};
+
+        document.getElementsByTagName("footer")[0].innerText += " " + new Date().toLocaleString();
+        setTimeout(() => { window.location.reload() }, challenge_time);
+    </script>
+</html>
