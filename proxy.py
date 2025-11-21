@@ -12,7 +12,7 @@ from config import STATIC_FOLDER, BUFFER_SIZE, Configuration
 
 from memory import KeyStore
 
-config = Configuration("racoon.toml")
+config = Configuration("raccoon.toml")
 sessions = KeyStore()
 
 
@@ -22,8 +22,7 @@ def make_session_token() -> str:
     :return: created session UUID
     """
     uuid_token = str(uuid.uuid4())
-    timestamp = datetime.now(timezone.utc) + timedelta(minutes=config.get_value(
-        "racoon", "cookie_expire_time_minutes"))
+    timestamp = datetime.now(timezone.utc)
     sessions.set(uuid_token, timestamp.timestamp())
     return uuid_token
 
@@ -37,13 +36,13 @@ def send_challenge(client: socket.socket) -> None:
     send_response(client,
     "HTTP/1.1", 200, "OK", render_template(
         f"{STATIC_FOLDER}/challenge.html",
-                challenge_time=str(config.get_value("racoon", "challenge_time_ms") + 500)
+                challenge_time=str(config.get_value("raccoon", "challenge_time_ms") + 500)
             ),
-            config.get_value("racoon", "max_body_size_bytes"),
+            config.get_value("raccoon", "max_body_size_bytes"),
             BUFFER_SIZE,
             {
                       "Set-Cookie": set_cookie(
-                          config.get_value("racoon", "cookie_name"),
+                          config.get_value("raccoon", "cookie_name"),
                           make_session_token()
                       ),
             }
@@ -57,9 +56,9 @@ def connection_thread(
 ) -> None:
     server: socket.socket | None = None
 
-    max_body_size = config.get_value("racoon", "max_body_size_bytes")
-    max_header_size = config.get_value("racoon", "max_header_size_bytes")
-    session_token_name = config.get_value("racoon", "cookie_name")
+    max_body_size = config.get_value("raccoon", "max_body_size_bytes")
+    max_header_size = config.get_value("raccoon", "max_header_size_bytes")
+    session_token_name = config.get_value("raccoon", "cookie_name")
 
     try:
         client_message = net.Request.read_header(
@@ -82,12 +81,24 @@ def connection_thread(
             return
 
         session_token = client_cookies.get(session_token_name)
-        expire_offset: bytes = sessions.get(session_token)
+        created_time: float = sessions.get(session_token)
 
-        if not expire_offset:
+        if not created_time:
             send_challenge(client)
             return
-        elif float(expire_offset) < datetime.now(timezone.utc).timestamp():
+
+        current_time: float = datetime.now(timezone.utc).timestamp()
+        expire_time: float = (datetime.fromtimestamp(created_time) + timedelta(minutes=config.get_value(
+        "raccoon", "cookie_expire_time_minutes"))).timestamp()
+        challenge_time: float = (datetime.fromtimestamp(created_time) + timedelta(milliseconds=config.get_value(
+            "raccoon", "challenge_time_ms"))).timestamp()
+
+        if current_time < challenge_time:
+            # User did not wait the required amount of time for the challenge
+            sessions.delete(session_token)
+            send_challenge(client)
+            return
+        elif current_time > expire_time:
             sessions.delete(session_token)
             send_challenge(client)
             return
@@ -128,14 +139,14 @@ def main(args: list[str]) -> int:
     soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     soc.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     soc.bind((
-        config.get_value("racoon", "host_ip"),
-        config.get_value("racoon", "host_port")
+        config.get_value("raccoon", "host_ip"),
+        config.get_value("raccoon", "host_port")
     ))
     soc.listen()
 
     print("Raccoon is listening on {ip}:{port}".format(
-        ip=config.get_value("racoon", "host_ip"),
-        port=config.get_value("racoon", "host_port")
+        ip=config.get_value("raccoon", "host_ip"),
+        port=config.get_value("raccoon", "host_port")
     ))
 
     for route, forward in config.get_config("routes").items():
