@@ -16,7 +16,7 @@ class Configuration:
             self.reload()
         else:
             self.__config_data = {
-                "racoon": {
+                "raccoon": {
                     "cookie_name": "__rsession",
                     "host_ip": "0.0.0.0",
                     "host_port": 80,
@@ -39,6 +39,7 @@ class Configuration:
                             f.write(f"{subkey} = \"{value}\"\n")
                         else:
                             f.write(f"{subkey} = {value}\n")
+                    f.write("\n")
 
     def get_value(self, config_name: str, key: str) -> Any | None:
         if config_name not in self.__config_data:
